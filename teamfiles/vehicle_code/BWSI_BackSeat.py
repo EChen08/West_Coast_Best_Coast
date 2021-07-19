@@ -109,6 +109,21 @@ class BackSeat():
         # STATE IN THE CONTROLLER!
         
         ### self.__autonomy.update_state() probably goes here!
+
+            #fields = (
+            #('Timestamp', 'timestamp', timestamp),
+            #('Latitude', "latitude_degrees", float),
+            #('Hemisphere N/S', "latitude_hemisphere"),
+            #('Longitude', "latitude_degrees", float),
+            #('Hemisphere E/W', "longitude_hemisphere"),
+            #('Position quality', "gps_available", int),
+            #('Altitude', "altitude_m", float),
+            #('Depth', "depth_m", float),
+            #('Heading', "heading_deg", float),
+            #('Roll', "roll_deg", float),
+            #('Pitch', "pitch_deg", float),
+            #('Timestamp of Fix', 'fix_timestamp', timestamp),
+         #)
         pass
         
     def send_message(self, msg):
