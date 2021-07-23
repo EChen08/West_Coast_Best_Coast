@@ -10,7 +10,6 @@ import random
 import time
 import datetime
 
-from BWSI_Sensor import BWSI_Camera, BWSI_Laser
 
 from pynmea2 import pynmea2
 import BluefinMessages
@@ -18,14 +17,18 @@ import BluefinMessages
 def nmea_lat(lat_deg):
     val = np.abs(lat_deg)
     degval = np.floor(val)
-    minval = (val - degval)*60
-    return f"{int(degval):02d}{minval*60:.5f}"
+    minflt = (val - degval)*60
+    minval = np.floor(minflt)
+    muval = np.int((minflt - minval)*1e6)
+    return f"{int(degval):02d}{int(minval):02d}.{int(muval)}"
 
 def nmea_lon(lon_deg):
     val = np.abs(lon_deg)
     degval = np.floor(val)
-    minval = (val - degval)*60
-    return f"{int(degval):03d}{minval*60:.5f}"
+    minflt = (val - degval)*60
+    minval = np.floor(minflt)
+    muval = np.int((minflt - minval)*1e6)
+    return f"{int(degval):03d}{int(minval):02d}.{int(muval)}"
 
 
 class Sandshark(object):
@@ -50,7 +53,7 @@ class Sandshark(object):
         if ( (engine_direction != "AHEAD") and (engine_direction != "ASTERN") ):
             raise ValueError
             
-        self.__timestamp = time.time()
+        self.__timestamp = datetime.datetime.utcnow().timestamp()
 
         self.__engine_state = (engine_speed, engine_direction)
         
@@ -76,8 +79,8 @@ class Sandshark(object):
         
         ######
         ## sensors
-        self.__laser = BWSI_Laser(visibility)
-        self.__camera = BWSI_Camera(visibility)
+        #self.__laser = BWSI_Laser(visibility)
+        #self.__camera = BWSI_Camera(visibility)
         
         ######################################
         ## external information and parameters
@@ -101,7 +104,7 @@ class Sandshark(object):
     def update_state(self, dt):
         self.__timestamp += dt
         
-        delta_heading = self.__MAX_TURNING_RATE * (self.__rudder_position / self.__HARD_RUDDER_DEG) * (self.__speed_knots / self.__MAX_SPEED_KNOTS) * dt
+        delta_heading = self.__MAX_TURNING_RATE * (-self.__rudder_position / self.__HARD_RUDDER_DEG) * (self.__speed_knots / self.__MAX_SPEED_KNOTS) * dt
         # adjust the delta heading based on rudder history
         delta_heading += self.__rudder_hydro_effect()
         
@@ -150,7 +153,7 @@ class Sandshark(object):
                                               f'{self.__heading:.1f}',
                                               f'{self.__roll:.1f}',
                                               f'{self.__pitch:.1f}',
-                                              f'{self.__timestamp:.2f}'))
+                                              f'{hhmmss}'))
       
         print(f'{str(msg)}\n')
         return str(msg)

@@ -29,10 +29,7 @@ class AUVController():
         # assume we want to be going the direction we're going for now
         self.__desired_heading = auv_state['heading']
 
-    ### Public member functions
-    def update_state(self):
-        pass
-
+    ### Public member functions    
     def decide(self, auv_state, green_buoys, red_buoys, sensor_type='POSITION'):
 
         # update state information
