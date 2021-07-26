@@ -33,7 +33,7 @@ class ImageProcessor():
             self.__simField = None
             
         else:
-            self.__camera = picamera.PiCamera()
+            #self.__camera = picamera.PiCamera()
             self.__camera.resolution = (640, 480)
             self.__camera.framerate = 24
             time.sleep(2) # camera warmup time

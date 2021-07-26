@@ -99,7 +99,7 @@ class BackSeat():
 
                 ### ---------------------------------------------------------- #
                 ### Here should be the request for a photo from the camera
-                ### img = self.__camera.acquire_image()
+                img = self.__camera.acquire_image()
                 ###
                 ### Here you process the image and return the angles to target
                 ### green, red = self.__detect_buoys(img)
@@ -107,7 +107,7 @@ class BackSeat():
                 ### ---------------------------------------------------------- #
                 
                 
-                ### self.__autonomy.decide() probably goes here!
+                self.__autonomy.decide()
                 ### ---------------------------------------------------------- #
                 
                 ### turn your output message into a BPRMB request! 

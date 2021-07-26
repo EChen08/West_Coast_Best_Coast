@@ -8,19 +8,16 @@ Created on Wed Jul  7 12:05:08 2021
 import sys
 import numpy as np
 
+def angle_difference(ref, target):
+    if abs(target - ref)>180:
+        return(abs(abs(target - ref) -360))
+    else:
+        return(abs(target -ref))
+
 class AUVController():
-    def __init__(self):
+    def __init__(self, auv_state):
         
         # initialize state information
-        self.__heading = None
-        self.__speed = None
-        self.__rudder = None
-        self.__position = None
-        
-        # assume we want to be going the direction we're going for now
-        self.__desired_heading = None
-        
-    def initialize(self, auv_state):
         self.__heading = auv_state['heading']
         self.__speed = auv_state['speed']
         self.__rudder = auv_state['rudder']
@@ -28,6 +25,8 @@ class AUVController():
         
         # assume we want to be going the direction we're going for now
         self.__desired_heading = auv_state['heading']
+        
+        
 
     ### Public member functions    
     def decide(self, auv_state, green_buoys, red_buoys, sensor_type='POSITION'):
@@ -68,12 +67,20 @@ class AUVController():
         return tgt_hdg
     
     def __heading_to_angle(self, gnext, rnext):
-        # relative angle to the center of the next buoy pair
-        relative_angle = (gnext[0] + rnext[0]) / 2.0
+
+        if len(gnext)==1 and len(rnext)==1 :
+            relative_angle = (gnext[0] + rnext[0]) / 2.0
+            # heading to center of the next buoy pair   
+            tgt_hdg = self.__heading + relative_angle
+        elif len(gnext)==1:
+            tgt_hdg = self.__heading + gnext[0]
         
-        # heading to center of the next buoy pair        
-        tgt_hdg = self.__heading + relative_angle
+        elif len(rnext)==1:
+            tgt_hdg = self.__heading + rnext[0]
         
+        else:
+            tgt_hdg = self.__heading
+
         return tgt_hdg
 
     # choose a command to send to the front seat
