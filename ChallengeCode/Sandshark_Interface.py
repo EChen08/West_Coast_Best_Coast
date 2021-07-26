@@ -181,6 +181,7 @@ class SandsharkClient():
                         self.__sockt.connect((self.__host, self.__port))
                     except:
                         pass
+                    print(next_msg)
                     self.__sockt.send(next_msg)
                     self.__outgoing.task_done()
     

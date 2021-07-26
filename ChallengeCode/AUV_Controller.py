@@ -15,17 +15,22 @@ def angle_difference(ref, target):
         return(abs(target -ref))
 
 class AUVController():
-    def __init__(self, auv_state):
+    def __init__(self):
         
         # initialize state information
+        self.__heading = None
+        self.__speed = None
+        self.__rudder = None
+        self.__position = None
+        
+        # assume we want to be going the direction we're going for now
+        self.__desired_heading = None
+    def initialize(self, auv_state):
+
         self.__heading = auv_state['heading']
         self.__speed = auv_state['speed']
         self.__rudder = auv_state['rudder']
-        self.__position = auv_state['position']
-        
-        # assume we want to be going the direction we're going for now
-        self.__desired_heading = auv_state['heading']
-        
+        self.__position = auv_state['position']   
         
 
     ### Public member functions    
