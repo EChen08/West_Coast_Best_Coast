@@ -87,6 +87,7 @@ class FrontSeat():
                     self.__isConnected = True
                     print("\nReceived from backseat:")
                     for msg in msgs:
+                        msg = self.convert_to_BPRMB(msg)
                         self.parse_payload_command(str(msg, 'utf-8'))
                         print(f"{str(msg, 'utf-8')}")
                         
@@ -112,7 +113,47 @@ class FrontSeat():
         except:
             self.__server.cleanup()
             server.join()
-            
+    
+    
+    def convert_to_BPRMB(self, msg):
+        output = "$BPRMB"
+        now = datetime.datetime.utcnow().timestamp()
+        delta_time = (now-self.__current_time) * self.__warp
+        output = output + str(delta_time)
+        rudder = ""
+        items = msg.split()
+        if items[0] == "RIGHT":
+            if items[1] == "STANDARD":
+                rudder = "15"
+            elif items[1] == "FULL":
+                rudder = "30"
+            else:
+                rudder = items[1]
+        elif items[0] == "LEFT":
+            if items[1] == "STANDARD":
+                rudder = "-15"
+            elif items[1] == "FULL":
+                rudder = "-30"
+            else:
+                rudder = "-" + items[1]
+        elif items[0] == "HARD":
+            if items[1] == "RIGHT":
+                rudder = "30"
+            else:
+                rudder = "-30"
+        elif items[0] == "INCREASE":
+            rudder = items[4]
+        elif items[0] == "RUDDER":
+            rudder = "0"
+        else:
+            pass
+        output = output + "," + rudder
+        for i in range(5):
+            output = output + ","
+        output = output + "1"
+        return output        
+    
+    
     def parse_payload_command(self, msg):
         # the only one I care about for now is BPRMB
         print(f"Parsing {msg}")
