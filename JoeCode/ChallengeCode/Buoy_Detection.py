@@ -27,16 +27,15 @@ def sensor_position(pix_x, pix_y, res_x, res_y):
 
 # returns horizontal angles to a point on a camera frame
 def angles(x, y):
-    vertical_angle = np.degrees(np.arctan(y/0.00304))
     horizontal_angle = np.degrees(np.arctan(x/0.00304))
-    return horizontal_angle, vertical_angle
+    return horizontal_angle
 
 # appends contour means, pixel position/angles if above threshold, returns number of buoys for each color
 def contour_func(contours, img, color:str): 
     ctr_areas = [0]
-    ctr_sens_means = [[[0,0]]]
-    ctr_sens_angles = [[[0,0]]]
-    ctr_pixel_means = [[[0,0]]]
+    ctr_sens_means = [[0,0]]
+    ctr_sens_angles = [0]
+    ctr_pixel_means = [[0,0]]
 
     red_buoys = 0
     green_buoys = 0
@@ -70,12 +69,12 @@ def contour_func(contours, img, color:str):
                     ctr_sens_angles.append(angles(sens_ctr[0], sens_ctr[1]))
 
     next_frames.append(img)
-    if ctr_areas != 0 and color == 'red':
+    if ctr_areas != [0] and color == 'red':
         red_sens_means.append(ctr_sens_means[0])
         red_sens_angles.append(ctr_sens_angles[0])
         red_pixel_means.append(ctr_pixel_means[0])
         return red_buoys
-    elif ctr_areas != 0 and color == 'green':
+    elif ctr_areas != [0] and color == 'green':
         green_sens_means.append(ctr_sens_means[0])
         green_sens_angles.append(ctr_sens_angles[0])
         green_pixel_means.append(ctr_pixel_means[0])
@@ -171,12 +170,13 @@ def run(path):
     im = cv2.imread(rf'{path}')
     red_buoys = red_update(im)
     green_buoys = green_update(im)
-    print(red_pixel_means[-1], green_pixel_means[-1])
+    print(red_pixel_means, green_pixel_means)
     plt.imshow(next_frames[-1])
     plt.show()
 
     pixel_means = [red_pixel_means, green_pixel_means]
     sens_means = [red_sens_means, green_sens_means]
     sens_angles = [red_sens_angles, green_sens_angles]
+
     num_buoys = [red_buoys, green_buoys]
     return pixel_means, sens_means, sens_angles, num_buoys
