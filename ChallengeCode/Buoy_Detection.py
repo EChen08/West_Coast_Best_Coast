@@ -162,7 +162,7 @@ def red_update(im): # updates red buoy data
         retval, img_out = cv2.threshold(img8, thresh8, 255, cv2.THRESH_BINARY)
         contours, hierarchy = cv2.findContours(img_out, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
-        # isolate only significant green blobs by creating a minimum area bound that determines whether blob is significant
+        # isolate only significant red blobs by creating a minimum area bound that determines whether blob is significant
         red_buoys = contour_func(contours, img, color='red')
     return red_buoys
 
