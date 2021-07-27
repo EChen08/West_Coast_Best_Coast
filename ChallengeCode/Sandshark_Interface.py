@@ -145,6 +145,11 @@ class SandsharkServer():
             
         return your_mail
 
+    # interpret the received strings
+    def __handle_data(self, data):
+        print(f"Received {data}")
+        #nmea.parse(data) 
+        
     
 # the backseat acts as client
 class SandsharkClient():
