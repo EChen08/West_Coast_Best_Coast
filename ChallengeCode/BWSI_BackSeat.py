@@ -122,27 +122,20 @@ class BackSeat():
                     print(f"dt = {self.__current_time - self.__start_time}")
                     if not engine_started and (self.__current_time - self.__start_time) > 3:
                         ## We want to change the speed. For now we will always use the RPM (1500 Max)
-                        self.__current_time = datetime.datetime.utcnow().timestamp()
-                        # This is the timestamp format from NMEA: hhmmss.ss
-                        hhmmss = datetime.datetime.fromtimestamp(self.__current_time).strftime('%H%M%S.%f')[:-4]
 
-                        cmd = f"BPRMB,{hhmmss},,,,750,0,1"
                         # NMEA requires a checksum on all the characters between the $ and the *
                         # you can use the BluefinMessages.checksum() function to calculate
                         # and write it like below. The checksum goes after the *
-                        msg = f"${cmd}*{hex(BluefinMessages.checksum(cmd))[2:]}\n"
+                        msg = f"${bprmb}*{hex(BluefinMessages.checksum(bprmb))[2:]}\n"
                         self.send_message(msg)
                         engine_started = True
 
                     if not turned and (self.__current_time - self.__start_time) > 30:
                         ## We want to set the rudder position, use degrees plus or minus
                         ## This command is how much to /change/ the rudder position, not to 
-                        ## set the rudder
-                        self.__current_time = datetime.datetime.utcnow().timestamp()
-                        hhmmss = datetime.datetime.fromtimestamp(self.__current_time).strftime('%H%M%S.%f')[:-4]
+                        ## set the rudder]
 
-                        cmd = f"BPRMB,{hhmmss},-15,,,750,0,1"
-                        msg = f"${cmd}*{hex(BluefinMessages.checksum(cmd))[2:]}\n"
+                        msg = f"${bprmb}*{hex(BluefinMessages.checksum(bprmb))[2:]}\n"
                         self.send_message(msg)
                         turned = True
                     
@@ -336,8 +329,6 @@ class BackSeat():
             output = output + ","
         output = output + "1"
         return output
-
-    
     
     
             
