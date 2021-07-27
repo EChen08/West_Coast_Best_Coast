@@ -99,19 +99,19 @@ class BackSeat():
 
                 ### ---------------------------------------------------------- #
                 ### Here should be the request for a photo from the camera
-                #img = self.__camera.acquire_image()
+                ### img = self.__camera.acquire_image()
                 ###
                 ### Here you process the image and return the angles to target
-                #green, red = self.__detect_buoys(img)
-                red, green = self.__buoy_detector.run(self.__auv_state)
+                ### green, red = self.__detect_buoys(img)
+                self.__buoy_detector.run(self.__auv_state)
                 ### ---------------------------------------------------------- #
                 
                 
-                cmd = self.__autonomy.decide(self.__auv_state, green, red, sensor_type='ANGLE')
+                ### self.__autonomy.decide() probably goes here!
                 ### ---------------------------------------------------------- #
                 
                 ### turn your output message into a BPRMB request! 
-                bprmb = self.convert_to_BPRMB(cmd)
+
                 time.sleep(1/self.__warp)
 
                 
@@ -257,7 +257,7 @@ class BackSeat():
         self.__client.send_message(msg)    
         
     def send_status(self):
-        print("sending status...")
+        #print("sending status...")
         self.__current_time = datetime.datetime.utcnow().timestamp()
         hhmmss = datetime.datetime.fromtimestamp(self.__current_time).strftime('%H%M%S.%f')[:-4]
         msg = BluefinMessages.BPSTS(hhmmss, 1, 'BWSI Autonomy OK')
@@ -298,44 +298,6 @@ class BackSeat():
                                     force_zone_letter=self.__datum_position[3])
         
         return (local_pos[0]-self.__datum_position[0], local_pos[1]-self.__datum_position[1])
-
-    def convert_to_BPRMB(self, msg):
-        output = "$BPRMB"
-        now = datetime.datetime.utcnow().timestamp()
-        delta_time = (now-self.__current_time) * self.__warp
-        output = output + str(delta_time)
-        rudder = ""
-        items = msg.split()
-        if items[0] == "RIGHT":
-            if items[1] == "STANDARD":
-                rudder = "15"
-            elif items[1] == "FULL":
-                rudder = "30"
-            else:
-                rudder = items[1]
-        elif items[0] == "LEFT":
-            if items[1] == "STANDARD":
-                rudder = "-15"
-            elif items[1] == "FULL":
-                rudder = "-30"
-            else:
-                rudder = "-" + items[1]
-        elif items[0] == "HARD":
-            if items[1] == "RIGHT":
-                rudder = "30"
-            else:
-                rudder = "-30"
-        elif items[0] == "INCREASE":
-            rudder = items[4]
-        elif items[0] == "RUDDER":
-            rudder = "0"
-        else:
-            pass
-        output = output + "," + rudder
-        for i in range(5):
-            output = output + ","
-        output = output + "1"
-        return output
 
     
     
