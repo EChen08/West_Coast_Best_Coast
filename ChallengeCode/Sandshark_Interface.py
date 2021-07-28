@@ -18,7 +18,7 @@ import traceback
 
 #import numpy as np
 
-#from pynmea2 import pynmea2
+#import pynmea2
 #import BluefinMessages
 
 ## The main message handler

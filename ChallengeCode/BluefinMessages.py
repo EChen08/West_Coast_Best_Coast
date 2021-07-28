@@ -6,9 +6,9 @@ Created on Sat Jul 17 10:27:35 2021
 @author: BWSI AUV Challenge Instructional Staff
 """
 
-from pynmea2 import pynmea2
-from pynmea2.pynmea2 import TalkerSentence
-from pynmea2.pynmea2.nmea_utils import timestamp
+import pynmea2
+from pynmea2 import TalkerSentence
+from pynmea2.nmea_utils import timestamp
 
 _TIMESTAMP_ = (
         ('Timestamp', 'timestamp', timestamp),
