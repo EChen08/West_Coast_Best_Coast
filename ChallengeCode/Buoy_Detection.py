@@ -85,6 +85,7 @@ def contour_func(contours, img, color:str):
 def green_update(im): #updates green buoy data
     green_buoys = 0
     img = cv2.resize(im, (640, 480)) # resize each image
+    img = np.flip(img, axis=0) # flip the image
 
     imhsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV) # convert to HSV
     median_blur = cv2.medianBlur(imhsv, 9) # apply median blur filter to smoothen the HSV image, denoise
@@ -130,6 +131,7 @@ def red_update(im): # updates red buoy data
     red_buoys = 0
     
     img = cv2.resize(im, (640, 480)) # resize each image
+    img = np.flip(img, axis=0) # flip the image
 
     imhsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV) # convert to HSV
     median_blur = cv2.medianBlur(imhsv, 5) # apply median to smoothen the HSV image, denoise
