@@ -1,0 +1,20 @@
+1627482398.698476, Sending: $BPLOG,ACK,ON*1e
+
+1627482398.698476, Sending: $BPLOG,ALL,ON*16
+
+1627482398.7003, Sending: $BPSTS,072638.70,1,BWSI Autonomy OK*4b
+
+1627482398.7003, Sending: $BPRMB,072638.70,,,,750,0,1*71
+
+1627482399.715154, Sending: $BPSTS,072639.71,1,BWSI Autonomy OK*4b
+
+1627482400.730008, Processing: $BFNVG,072638.02,4218.000000,N,07106.000000,W,0,10.0,1.0,45.0,0.0,0.0,072638.02*62
+Interpreted as: {'position': (0, 0), 'latlon': (42.3, -71.1), 'heading': 45.0, 'depth': 1.0, 'altitude': 10.0, 'roll': 0.0, 'pitch': 0.0, 'last_fix_time': datetime.datetime(2021, 7, 28, 7, 26, 38), 'datum': (42.3, -71.1)}
+1627482400.730008, Processing: $BFNVG,072638.28,4218.000000,N,07106.000000,W,0,10.0,1.0,45.0,0.0,0.0,072638.28*62
+Interpreted as: {'position': (0.0, 0.0), 'latlon': (42.3, -71.1), 'heading': 45.0, 'depth': 1.0, 'altitude': 10.0, 'roll': 0.0, 'pitch': 0.0, 'last_fix_time': datetime.datetime(2021, 7, 28, 7, 26, 38), 'datum': (42.3, -71.1)}
+1627482400.730008, Processing: $BFNVG,072638.54,4218.000000,N,07106.000000,W,0,10.0,1.0,45.0,0.0,0.0,072638.54*62
+Interpreted as: {'position': (0.0, 0.0), 'latlon': (42.3, -71.1), 'heading': 45.0, 'depth': 1.0, 'altitude': 10.0, 'roll': 0.0, 'pitch': 0.0, 'last_fix_time': datetime.datetime(2021, 7, 28, 7, 26, 38), 'datum': (42.3, -71.1)}
+1627482400.730008, Processing: $BFNVG,072638.79,4218.000000,N,07106.000000,W,0,10.0,1.0,45.0,0.0,0.0,072638.79*62
+Interpreted as: {'position': (0.0, 0.0), 'latlon': (42.3, -71.1), 'heading': 45.0, 'depth': 1.0, 'altitude': 10.0, 'roll': 0.0, 'pitch': 0.0, 'last_fix_time': datetime.datetime(2021, 7, 28, 7, 26, 38), 'datum': (42.3, -71.1)}
+1627482400.730008, Processing: $BFNVG,072639.22,4218.000000,N,07106.000000,W,0,10.0,1.0,45.0,0.0,0.0,072639.22*62
+Interpreted as: {'position': (0.0, 0.0), 'latlon': (42.3, -71.1), 'heading': 45.0, 'depth': 1.0, 'altitude': 10.0, 'roll': 0.0, 'pitch': 0.0, 'last_fix_time': datetime.datetime(2021, 7, 28, 7, 26, 39), 'datum': (42.3, -71.1)}
