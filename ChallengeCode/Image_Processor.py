@@ -88,8 +88,8 @@ class ImageProcessor():
             # log the image
             fn = self.__image_dir / f"frame_{int(datetime.datetime.utcnow().timestamp())}.jpg"
             cv2.imwrite(str(fn), image)
-        
+            
             # process and find the buoys!
-            red, green = bd.run(fn)[2]
+            red, green = bd.run(str(fn))[2]
 
         return red, green
