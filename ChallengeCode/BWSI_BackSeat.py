@@ -134,22 +134,25 @@ class BackSeat():
                 ###
                 ### Here you process the image and return the angles to target
                 ### green, red = self.__detect_buoys(img)
-                #self.__buoy_detector.run(self.__auv_state)
+                buoys = self.__buoy_detector.run(self.__auv_state)
+                red = buoys[0]
+                green = buoys[1]
                 ### ---------------------------------------------------------- #
                 
                 ### ---------------------------------------------------------- #
                 ### self.__autonomy.decide() probably goes here!
-                #self.__autonomy.decide(self.__auv_state, )
+                cmd = self.__autonomy.decide(self.__auv_state, green, red)
                 ### ---------------------------------------------------------- #
                 
                 ### turn your output message into a BPRMB request! 
-                #self.convert_to_BPRMB()
+                BPRMP = self.convert_to_BPRMB(cmd)
+                self.send_message(BPRMP)
                 time.sleep(1/self.__warp)
                 
                 # ------------------------------------------------------------ #
                 # ----This is example code to show commands being issued
                 # ------------------------------------------------------------ #
-                if True:
+                if False:
                     print(f"dt = {self.__current_time - self.__start_time}")
                     if not engine_started and (self.__current_time - self.__start_time) > 3:
                         ## We want to change the speed. For now we will always use the RPM (1500 Max)

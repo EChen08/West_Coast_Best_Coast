@@ -150,7 +150,7 @@ class AUVController():
             self.target = None
             self.__desired_heading = self.__heading
     
-    def decide(self, auv_state, green_buoys, red_buoys, sensor_type='POSITION'):
+    def decide(self, auv_state, green_buoys, red_buoys):
         self.__heading = auv_state['heading']
         self.__position = np.array(auv_state['position'])
         self.__green_buoys = np.array(green_buoys)
