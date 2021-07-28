@@ -19,7 +19,7 @@ import utm
 from Image_Processor import ImageProcessor
 from AUV_Controller import AUVController
 
-from pynmea2 import pynmea2
+import pynmea2
 import BluefinMessages
 from Sandshark_Interface import SandsharkClient
 
@@ -36,6 +36,37 @@ def checkthesum(msg):
     return True
 
 class BackSeat():
+    def convert_to_BPRMB(self, msg):
+        self.__current_time = datetime.datetime.utcnow().timestamp()
+        hhmmss = datetime.datetime.fromtimestamp(self.__current_time).strftime('%H%M%S.%f')[:-4]
+        rudder = ""
+        items = msg.split()
+        if items[0] == "RIGHT":
+            if items[1] == "FULL":
+                rudder = "-15"
+            else:
+                rudder = "-" + items[1]
+        elif items[0] == "LEFT":
+            if items[1] == "FULL":
+                rudder = "15"
+            else:
+                rudder = items[1]
+        elif items[0] == "HARD":
+            if items[1] == "RIGHT":
+                rudder = "-25"
+            else:
+                rudder = "25"
+        elif items[0] == "INCREASE":
+            rudder = items[4]
+        elif items[0] == "RUDDER":
+            rudder = "0"
+        else:
+            pass
+
+        cmd = f"BPRMB,{hhmmss},{rudder},,,750,0,1"
+        msg = f"${cmd}*{hex(BluefinMessages.checksum(cmd))[2:]}\n"
+        return(msg)
+
     # we assign the mission parameters on init
     def __init__(self, host='localhost', port=8000, warp=1):
         
@@ -103,17 +134,17 @@ class BackSeat():
                 ###
                 ### Here you process the image and return the angles to target
                 ### green, red = self.__detect_buoys(img)
-                self.__buoy_detector.run(self.__auv_state)
+                #self.__buoy_detector.run(self.__auv_state)
                 ### ---------------------------------------------------------- #
                 
-                
+                ### ---------------------------------------------------------- #
                 ### self.__autonomy.decide() probably goes here!
+                #self.__autonomy.decide(self.__auv_state, )
                 ### ---------------------------------------------------------- #
                 
                 ### turn your output message into a BPRMB request! 
-
+                #self.convert_to_BPRMB()
                 time.sleep(1/self.__warp)
-
                 
                 # ------------------------------------------------------------ #
                 # ----This is example code to show commands being issued
@@ -299,10 +330,6 @@ class BackSeat():
         
         return (local_pos[0]-self.__datum_position[0], local_pos[1]-self.__datum_position[1])
 
-    
-    
-    
-            
 def main():
     if len(sys.argv) > 1:
         host = sys.argv[1]
