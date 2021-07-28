@@ -12,7 +12,7 @@ import datetime
 import pytz
 
 
-from pynmea2 import pynmea2
+import pynmea2
 import BluefinMessages
 
 def nmea_lat(lat_deg):
