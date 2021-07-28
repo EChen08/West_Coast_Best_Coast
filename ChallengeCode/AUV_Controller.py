@@ -16,7 +16,6 @@ class AUVController():
         self.status = None
         self.__heading = None
         self.__speed = None
-        self.__rudder = None
         self.__position = None
         self.stored_buoy_red = None
         self.stored_buoy_green = None
@@ -27,16 +26,14 @@ class AUVController():
         self.__desired_heading = None
         
         #reference data from realworld AUV testing for turning rate
-        self.reference_turning_rate = None
-        self.reference_rudder = None
-        self.reference_speed = None
-        self.hard_rudder_degrees = None
-        self.full_rudder_degrees = None
+        self.reference_turning_rate = 15.64
+        self.reference_rudder = 25.0
+        self.reference_speed = 5.0
+        self.hard_rudder_degrees = 25.0
+        self.full_rudder_degrees = 15.0
 
     def initialize(self, auv_state):
         self.__heading = auv_state['heading']
-        self.__speed = auv_state['speed']
-        self.__rudder = auv_state['rudder']
         self.__position = auv_state['position']
         
         # assume we want to be going the direction we're going for now
@@ -49,7 +46,7 @@ class AUVController():
         elif desired_rudder > self.full_rudder_degrees:
             return(direction + 'FULL RUDDER')
         else:
-            return(direction + str(desired_rudder) + ' DEGREES RUDDER')
+            return(direction + str(int(desired_rudder)) + ' DEGREES RUDDER')
 
     def right_or_left_turn(self, heading, desired_heading):
         if (heading - desired_heading) > 180:
@@ -155,14 +152,13 @@ class AUVController():
     
     def decide(self, auv_state, green_buoys, red_buoys, sensor_type='POSITION'):
         self.__heading = auv_state['heading']
-        self.__speed = auv_state['speed']
-        self.__rudder = auv_state['rudder']
         self.__position = np.array(auv_state['position'])
         self.__green_buoys = np.array(green_buoys)
         self.__red_buoys = np.array(red_buoys)
 
-        if self.stored_position == None or self.stored_buoy_green == None or self.stored_buoy_red == None or self.stored_heading == None:
-            cmd = None
+        if self.__speed == None or self.stored_position == None or self.stored_buoy_green == None or self.stored_buoy_red == None or self.stored_heading == None:
+            cmd = 'ENGINE HALF AHEAD'
+            self.__speed = 2.5
         else:
             self.find_target_and_desired_heading(self.__green_buoys, self.__red_buoys, self.__position)
             
