@@ -179,8 +179,6 @@ def run(image):
     red_buoys = red_update(im)
     green_buoys = green_update(im)
     print(red_pixel_means, green_pixel_means)
-    plt.imshow(next_frames[-1])
-    plt.show()
 
     pixel_means = [red_pixel_means, green_pixel_means]
     sens_means = [red_sens_means, green_sens_means]
