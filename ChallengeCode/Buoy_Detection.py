@@ -84,8 +84,9 @@ def contour_func(contours, img, color:str):
 
 def green_update(im): #updates green buoy data
     green_buoys = 0
+    
     img = cv2.resize(im, (640, 480)) # resize each image
-    img = np.flip(img, axis=0) # flip the image
+    #img = np.flip(img, axis=0) # flip the image
 
     imhsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV) # convert to HSV
     median_blur = cv2.medianBlur(imhsv, 9) # apply median blur filter to smoothen the HSV image, denoise
@@ -122,7 +123,10 @@ def green_update(im): #updates green buoy data
         thresh8 = thresh8.astype(np.uint8)
 
         retval, img_out = cv2.threshold(img8, thresh8, 255, cv2.THRESH_BINARY)
-        contours, hierarchy = cv2.findContours(img_out, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+        if cv2.__version__ == '3.2.0':
+            _, contours, hierarchy = cv2.findContours(img_out, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+        else:
+            contours, hierarchy = cv2.findContours(img_out, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         # isolate only significant green blobs by creating a minimum area bound that determines whether blob is significant
         green_buoys = contour_func(contours, img, color='green')
     return green_buoys
@@ -131,7 +135,7 @@ def red_update(im): # updates red buoy data
     red_buoys = 0
     
     img = cv2.resize(im, (640, 480)) # resize each image
-    img = np.flip(img, axis=0) # flip the image
+    #img = np.flip(img, axis=0) # flip the image
 
     imhsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV) # convert to HSV
     median_blur = cv2.medianBlur(imhsv, 5) # apply median to smoothen the HSV image, denoise
@@ -162,23 +166,24 @@ def red_update(im): # updates red buoy data
         thresh8 = thresh8.astype(np.uint8)
 
         retval, img_out = cv2.threshold(img8, thresh8, 255, cv2.THRESH_BINARY)
-        contours, hierarchy = cv2.findContours(img_out, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+        if cv2.__version__ == '3.2.0':
+            _, contours, hierarchy = cv2.findContours(img_out, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+        else:
+            contours, hierarchy = cv2.findContours(img_out, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
         # isolate only significant red blobs by creating a minimum area bound that determines whether blob is significant
         red_buoys = contour_func(contours, img, color='red')
     return red_buoys
 
-def run(path):
-    im = cv2.imread(rf'{path}')
+def run(image):
+    im = cv2.imread(image)
     red_buoys = red_update(im)
     green_buoys = green_update(im)
     print(red_pixel_means, green_pixel_means)
-    plt.imshow(next_frames[-1])
-    plt.show()
 
     pixel_means = [red_pixel_means, green_pixel_means]
     sens_means = [red_sens_means, green_sens_means]
     sens_angles = [red_sens_angles, green_sens_angles]
 
     num_buoys = [red_buoys, green_buoys]
-    return pixel_means, sens_means, sens_angles, num_buoys
+    return sens_angles[0], sens_angles[1]

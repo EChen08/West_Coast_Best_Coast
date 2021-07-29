@@ -19,28 +19,31 @@ class AUVController():
         
         # initialize state information
         self.__heading = None
-        self.__speed = None
-        self.__rudder = None
-        self.__position = None
+        # self.__speed = None
+        # self.__rudder = None
+        # self.__position = None
         
         # assume we want to be going the direction we're going for now
         self.__desired_heading = None
+    
     def initialize(self, auv_state):
 
         self.__heading = auv_state['heading']
-        self.__speed = auv_state['speed']
-        self.__rudder = auv_state['rudder']
-        self.__position = auv_state['position']   
+        # self.__speed = auv_state['speed']
+        # self.__rudder = auv_state['rudder']
+        # self.__position = auv_state['position']   
         
+        self.__desired_heading = auv_state['heading']
 
     ### Public member functions    
     def decide(self, auv_state, green_buoys, red_buoys, sensor_type='POSITION'):
 
         # update state information
         self.__heading = auv_state['heading']
-        self.__speed = auv_state['speed']
-        self.__rudder = auv_state['rudder']
-        self.__position = auv_state['position']
+        print('the heading is ', self.__heading)
+        # self.__speed = auv_state['speed']
+        # self.__rudder = auv_state['rudder']
+        # self.__position = auv_state['position']
                 
         # determine what heading we want to go
         if sensor_type.upper() == 'POSITION': # known positions of buoys
@@ -50,7 +53,7 @@ class AUVController():
         
         # determine whether and what command to issue to desired heading               
         cmd = self.__select_command()
-        
+        print(cmd)
         return cmd
         
     # return the desired heading to a public requestor
@@ -107,11 +110,9 @@ class AUVController():
         
         # which way do we have to turn
         if delta_angle>2: # need to turn to right!
-            if self.__rudder >= 0: # rudder is turning the other way!
-                cmd = f"RIGHT {turn_command}"
+            cmd = f"RIGHT {turn_command}"
         elif delta_angle<-2: # need to turn to left!
-            if self.__rudder <= 0: # rudder is turning the other way!
-                cmd = f"LEFT {turn_command}"
+            cmd = f"LEFT {turn_command}"
         else: #close enough!
             cmd = "RUDDER AMIDSHIPS"
         

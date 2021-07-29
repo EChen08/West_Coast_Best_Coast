@@ -75,7 +75,8 @@ class FrontSeat():
 
 
             count = 0
-            while True:
+            continues = True
+            while continues:
                 now = datetime.datetime.utcnow().timestamp()
                 delta_time = (now-self.__current_time) * self.__warp
                 msg = self.__vehicle.update_state(delta_time)
@@ -119,12 +120,12 @@ class FrontSeat():
         payld = msg.split('*')
         vals = payld[0].split(',')
         if vals[0] == '$BPRMB':
-            print("Here!")
-                
+            print("got a bprmb request")
+            print(msg)   
             # heading / rudder request
             if vals[2] != '':
                 print("Here?")
-                heading_mode = int(vals[7])
+                heading_mode = int(float(vals[7]))
                 if heading_mode == 0:
                     # this is a heading request!
                     print("SORRY, I DO NOT ACCEPT HEADING REQUESTS! I ONLY HAVE CAMERA SENSOR!")
@@ -136,14 +137,16 @@ class FrontSeat():
                 
             # speed request
             if vals[5] != '':
-                speed_mode = int(vals[6])
+                speed_mode = int(float(vals[6]))
                 if speed_mode == 0:
-                    RPM = int(vals[5])
+                    RPM = int(float(vals[5]))
                     print(f"SETTING THRUSTER TO {RPM} RPM")
                     self.__vehicle.set_rpm(RPM)
                 elif speed_mode == 1:
                     # speed_request
                     print("SORRY, RPM SPEED REQUESTS ONLY! I HAVE NO GPS!")
+        else:
+            print('got request, but it was not bprmb format')
 
 def main():
     if len(sys.argv) > 1:
