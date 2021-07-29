@@ -10,12 +10,15 @@ Created on Thu Jul 22 11:30:37 2021
 import sys
 import pathlib
 import datetime
+import os
 
 import time
 import cv2
 import numpy as np
-# import picamera
-# import picamera.array
+
+#if os.uname().nodename == 'auvpi':
+ #   import picamera
+  #  import picamera.array
 
 # For simulations
 from BWSI_BuoyField import BuoyField
@@ -32,7 +35,7 @@ class ImageProcessor():
             self.__simField = None
             
         else:
-            # self.__camera = picamera.PiCamera()
+            self.__camera = picamera.PiCamera()
             self.__camera.resolution = (640, 480)
             self.__camera.framerate = 24
             time.sleep(2) # camera warmup time
@@ -74,12 +77,13 @@ class ImageProcessor():
                     self.__camera.capture(self.__image, 'bgr')
                 except:
                     # restart the camera
-                    # self.__camera = picamera.PiCamera()
+                    self.__camera = picamera.PiCamera()
                     self.__camera.resolution = (640, 480)
                     self.__camera.framerate = 24
                     time.sleep(2) # camera warmup time
                     
-                image = self.__image.reshape((480, 640, 3))
+                image = self.__camera.reshape((640, 480, 3))
+                image = np.flip(image, axis=0)
         
             else:
                 print(f"Unknown camera type: {self.__camera_type}")

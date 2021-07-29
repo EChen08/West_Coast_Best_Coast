@@ -260,40 +260,39 @@ class BackSeat():
 
     def convert_to_BPRMB(self, msg):
         if msg is None:
-            return
-        
-        self.__current_time = time.time()
-        hhmmss = datetime.datetime.fromtimestamp(self.__current_time).strftime('%H%M%S.%f')[:-4]
+            return 
+        self.current_time = datetime.datetime.utcnow().timestamp()
+        hhmmss = datetime.datetime.fromtimestamp(self.current_time).strftime('%H%M%S.%f')[:-4]
         rudder = ""
         items = msg.split()
         if items[0] == "RIGHT":
-            if items[1] == "STANDARD":
-                rudder = "15"
-            elif items[1] == "FULL":
-                rudder = "30"
-            else:
-                rudder = str(int(float(items[1])))
-        elif items[0] == "LEFT":
-            if items[1] == "STANDARD":
+            if items[1] == "FULL":
                 rudder = "-15"
-            elif items[1] == "FULL":
-                rudder = "-30"
+            elif items[1] == "STANDARD":
+                rudder = "-10"
             else:
-                rudder = "-" + str(int(float(items[1])))
+                rudder = "-" + items[1]
+        elif items[0] == "LEFT":
+            if items[1] == "FULL":
+                rudder = "15"
+            elif items[1] == "STANDARD":
+                rudder = "10"
+            else:
+                rudder = items[1]
         elif items[0] == "HARD":
             if items[1] == "RIGHT":
-                rudder = "35"
+                rudder = "-25"
             else:
-                rudder = "-35"
+                rudder = "25"
         elif items[0] == "INCREASE":
-            rudder = str(int(float(items[4])))
+            rudder = items[4]
         elif items[0] == "RUDDER":
             rudder = "0"
         else:
             pass
-        output = BluefinMessages.BPRMB(timestamp=hhmmss, heading=rudder, speed=500, speed_mode=int(0), horiz_mode=int(1))
-        self.send_message(output)
-
+        cmd = f"BPRMB,{hhmmss},{rudder},1,0,1000,0,1"
+        msg = f"${cmd}*{hex(BluefinMessages.checksum(cmd))[2:]}\n"
+        self.send_message(msg)
 
 def main():
     if len(sys.argv) > 1:

@@ -83,7 +83,6 @@ class BWSI_Camera(object):
         
             # find the region of the image that this buoy spans
             # print(f"buoy_range = {buoy_range}")
-            print('helloo green')
             image_snap = self.add_buoy_image_to_image(image_snap, buoy_range, relative_heading, elev, 'green')
             
         for r in R:

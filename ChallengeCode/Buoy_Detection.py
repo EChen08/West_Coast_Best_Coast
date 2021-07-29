@@ -177,14 +177,19 @@ def red_update(im): # updates red buoy data
     return red_buoys
 
 def run(image):
-    im = cv2.imread(image)
+    im = cv2.imread(r'.\frames\frame_1627338749.jpg')
     red_buoys = red_update(im)
     green_buoys = green_update(im)
     print(red_pixel_means, green_pixel_means)
+    plt.imshow(next_frames[-1])
+    plt.show()
 
     pixel_means = [red_pixel_means, green_pixel_means]
     sens_means = [red_sens_means, green_sens_means]
     sens_angles = [red_sens_angles, green_sens_angles]
-
+    if sens_angles[0] == []:
+        sens_angles[0] = None
+    if sens_angles[1] == []:
+        sens_angles[1] = None
     num_buoys = [red_buoys, green_buoys]
     return sens_angles[0], sens_angles[1]

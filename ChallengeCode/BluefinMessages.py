@@ -339,7 +339,7 @@ def checksum(my_str):
     return cksum
 
 def str_to_cmd(msg_str):
-    return f"${msg_str}*{hex(checksum(msg_str))[2:]}\n"
+    return f"${msg_str}*{hex(checksum(msg_str))[2:]}\r\n"
 
 def BPLOG(identifier='ALL', log_request='ON'):
     """ Logging control
