@@ -11,3 +11,6 @@ ChallengeCode/__pycache__/BWSI_Sandshark.cpython-38.pyc
 ChallengeCode/__pycache__/BWSI_Sensor.cpython-38.pyc
 ChallengeCode/__pycache__/Image_Processor.cpython-38.pyc
 .gitignore
+*.log
+*.pyc
+*.jpg
