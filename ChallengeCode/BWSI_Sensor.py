@@ -83,6 +83,7 @@ class BWSI_Camera(object):
         
             # find the region of the image that this buoy spans
             # print(f"buoy_range = {buoy_range}")
+            print('helloo green')
             image_snap = self.add_buoy_image_to_image(image_snap, buoy_range, relative_heading, elev, 'green')
             
         for r in R:
@@ -103,8 +104,9 @@ class BWSI_Camera(object):
         image_snap[image_snap<0] = 0
         
         # make it BGR since we're working with cv2
-        image_snap = np.flip(image_snap, axis=2)
-           
+        if np.ndim(image_snap) == 3:
+            image_snap = np.flip(image_snap, axis=2)
+
         return image_snap
             
 
@@ -112,11 +114,11 @@ class BWSI_Camera(object):
     def add_buoy_image_to_image(self, image_snap, R, hdg, elev, color, buoy_length=0.28):
         if color.lower() == 'red':
             if self.__buoy_image_red is None:
-                self.__buoy_image_red = np.flip(cv2.imread('data/red_buoy_pool_img.jpg'), axis=2)
+                self.__buoy_image_red = np.flip(cv2.imread(r'./data/red_buoy_pool_img.jpg'), axis=2)
             img = self.__buoy_image_red
         elif color.lower() == 'green':
             if self.__buoy_image_green is None:
-                self.__buoy_image_green = np.flip(cv2.imread('data/green_buoy_pool_img.jpg'), axis=2)
+                self.__buoy_image_green = np.flip(cv2.imread(r'./data/green_buoy_pool_img.jpg'), axis=2)
             img = self.__buoy_image_green
         else:
             print(f"Unknown color: {color}")

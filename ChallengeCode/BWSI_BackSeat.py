@@ -101,6 +101,7 @@ class BackSeat():
                 #img = self.__camera.acquire_image()
                 ###
                 ### Here you process the image and return the angles to target
+                
                 green, red = self.__buoy_detector.run(self.__auv_state)
 
                 print("green:", green)

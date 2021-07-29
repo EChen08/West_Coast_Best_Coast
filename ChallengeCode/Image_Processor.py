@@ -54,14 +54,16 @@ class ImageProcessor():
             if (self.__camera_type == 'SIM'):
                 # if it's the first time through, configure the buoy field
                 if self.__simField is None:
+                    
                     self.__simField = BuoyField(auv_state['datum'])
+
                     config = {'nGates': 5,
                               'gate_spacing': 5,
                               'gate_width': 2,
                               'style': 'pool_1',
                               'max_offset': 5,
                               'heading': 45}
-                    
+                              
                     self.__simField.configure(config)
                  
                 # synthesize an image
@@ -86,7 +88,14 @@ class ImageProcessor():
             # log the image
             fn = rf"{self.__image_dir}/frame_{int(datetime.datetime.utcnow().timestamp())}.jpg"
             cv2.imwrite(fn, image)
-            green, red = Buoy_Detection.run(fn)
+            red, green = Buoy_Detection.run(fn)
         
-        return green, red
+        if green and red:
+            return green[-1], red[-1]
+        elif green:
+            return green[-1], red
+        elif red:
+            return green, red[-1]
+        else:
+            return green, red
     

@@ -71,18 +71,18 @@ class AUVController():
     
     def __heading_to_angle(self, gnext, rnext):
         if not gnext and not rnext:
-            print('no')
             return self.__heading
-        elif len(gnext)>=1 and len(rnext)>=1 :
-            relative_angle = (min(gnext) + min(rnext)) / 2.0
+        elif gnext and rnext:
+            relative_angle = (gnext + rnext) / 2.0
             # heading to center of the next buoy pair   
             tgt_hdg = self.__heading + relative_angle
-        elif len(gnext)>=1:
-            tgt_hdg = self.__heading + min(gnext)        
-        elif len(rnext)>=1:
-            tgt_hdg = self.__heading + min(rnext)
+        elif gnext:
+            tgt_hdg = self.__heading + gnext        
+        elif rnext:
+            tgt_hdg = self.__heading + rnext
+        else:
+            return self.__heading
 
-        print('none of the above')
         return tgt_hdg
 
     # choose a command to send to the front seat
@@ -113,4 +113,3 @@ class AUVController():
             cmd = "RUDDER AMIDSHIPS"
         
         return cmd
-    
