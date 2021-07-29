@@ -16,8 +16,8 @@ import time
 import cv2
 import numpy as np
 
-#import picamera
-#import picamera.array
+import picamera
+import picamera.array
 
 # For simulations
 from BWSI_BuoyField import BuoyField
