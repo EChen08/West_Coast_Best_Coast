@@ -291,7 +291,7 @@ class BackSeat():
             rudder = "0"
         else:
             pass
-        output = BluefinMessages.BPRMB(timestamp=hhmmss, heading=rudder, speed=500, speed_mode=int(0), horiz_mode=int(1))
+        output = BluefinMessages.BPRMB(timestamp=hhmmss, heading=rudder, depth=1, depth_mode=0, speed=500, speed_mode=int(0), horiz_mode=int(1))
         self.send_message(output)
 
 
