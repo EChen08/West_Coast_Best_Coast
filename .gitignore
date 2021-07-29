@@ -1,2 +1,13 @@
 
 *.pyc
+ChallengeCode/__pycache__/Image_Processor.cpython-38.pyc
+ChallengeCode/__pycache__/Sandshark_Interface.cpython-38.pyc
+ChallengeCode/__pycache__/BWSI_BackSeat.cpython-38.pyc
+ChallengeCode/__pycache__/BWSI_FrontSeat.cpython-38.pyc
+ChallengeCode/__pycache__/Buoy_Detection.cpython-38.pyc
+ChallengeCode/__pycache__/AUV_Controller.cpython-38.pyc
+ChallengeCode/__pycache__/BWSI_BuoyField.cpython-38.pyc
+ChallengeCode/__pycache__/BWSI_Sandshark.cpython-38.pyc
+ChallengeCode/__pycache__/BWSI_Sensor.cpython-38.pyc
+ChallengeCode/__pycache__/Image_Processor.cpython-38.pyc
+.gitignore

@@ -75,7 +75,8 @@ class FrontSeat():
 
 
             count = 0
-            while True:
+            continues = True
+            while continues:
                 now = datetime.datetime.utcnow().timestamp()
                 delta_time = (now-self.__current_time) * self.__warp
                 msg = self.__vehicle.update_state(delta_time)
@@ -87,7 +88,6 @@ class FrontSeat():
                     self.__isConnected = True
                     print("\nReceived from backseat:")
                     for msg in msgs:
-                        msg = self.convert_to_BPRMB(msg)
                         self.parse_payload_command(str(msg, 'utf-8'))
                         print(f"{str(msg, 'utf-8')}")
                         
@@ -112,47 +112,7 @@ class FrontSeat():
                 time.sleep(.25/self.__warp)
         except:
             self.__server.cleanup()
-            server.join()
-    
-    
-    def convert_to_BPRMB(self, msg):
-        output = "$BPRMB"
-        now = datetime.datetime.utcnow().timestamp()
-        delta_time = (now-self.__current_time) * self.__warp
-        output = output + str(delta_time)
-        rudder = ""
-        items = msg.split()
-        if items[0] == "RIGHT":
-            if items[1] == "STANDARD":
-                rudder = "15"
-            elif items[1] == "FULL":
-                rudder = "30"
-            else:
-                rudder = items[1]
-        elif items[0] == "LEFT":
-            if items[1] == "STANDARD":
-                rudder = "-15"
-            elif items[1] == "FULL":
-                rudder = "-30"
-            else:
-                rudder = "-" + items[1]
-        elif items[0] == "HARD":
-            if items[1] == "RIGHT":
-                rudder = "30"
-            else:
-                rudder = "-30"
-        elif items[0] == "INCREASE":
-            rudder = items[4]
-        elif items[0] == "RUDDER":
-            rudder = "0"
-        else:
-            pass
-        output = output + "," + rudder
-        for i in range(5):
-            output = output + ","
-        output = output + "1"
-        return output        
-    
+            server.join()      
     
     def parse_payload_command(self, msg):
         # the only one I care about for now is BPRMB
@@ -160,12 +120,12 @@ class FrontSeat():
         payld = msg.split('*')
         vals = payld[0].split(',')
         if vals[0] == '$BPRMB':
-            print("Here!")
-                
+            print("got a bprmb request")
+            print(msg)   
             # heading / rudder request
             if vals[2] != '':
                 print("Here?")
-                heading_mode = int(vals[7])
+                heading_mode = int(float(vals[7]))
                 if heading_mode == 0:
                     # this is a heading request!
                     print("SORRY, I DO NOT ACCEPT HEADING REQUESTS! I ONLY HAVE CAMERA SENSOR!")
@@ -177,20 +137,22 @@ class FrontSeat():
                 
             # speed request
             if vals[5] != '':
-                speed_mode = int(vals[6])
+                speed_mode = int(float(vals[6]))
                 if speed_mode == 0:
-                    RPM = int(vals[5])
+                    RPM = int(float(vals[5]))
                     print(f"SETTING THRUSTER TO {RPM} RPM")
                     self.__vehicle.set_rpm(RPM)
                 elif speed_mode == 1:
                     # speed_request
                     print("SORRY, RPM SPEED REQUESTS ONLY! I HAVE NO GPS!")
+        else:
+            print('got request, but it was not bprmb format')
 
 def main():
     if len(sys.argv) > 1:
         port = sys.argv[1]
     else:
-        port = 29500
+        port = 8042
         
     print(f"port = {port}")
         

@@ -28,7 +28,7 @@ def checkthesum(msg):
     fields = msg.split('*')
     cmd = fields[0][1:]
     expected = str(hex(BluefinMessages.checksum(cmd))[2:])
-    if expected.upper() != fields[1].upper():
+    if expected.upper() != fields[1][:2].upper():
         print(f"cmd = {cmd}\n")
         print(f"{expected} != {fields[1]}\n")
         return False
@@ -54,7 +54,8 @@ class BackSeat():
             ('altitude', None),
             ('roll', None),
             ('pitch', None),
-            ('last_fix_time', None)
+            ('last_fix_time', None),
+            ('rudder', None)
             ])
         
         # we'll use the first navigation update as datum
@@ -77,8 +78,6 @@ class BackSeat():
             self.send_message(msg)
                         
             ### These flags are for the test code. Remove them after the initial test!
-            engine_started = False
-            turned = False
             while True:
                 now = datetime.datetime.utcnow().timestamp()
                 delta_time = (now-self.__current_time) * self.__warp
@@ -102,56 +101,20 @@ class BackSeat():
                 #img = self.__camera.acquire_image()
                 ###
                 ### Here you process the image and return the angles to target
-                #green, red = self.__detect_buoys(img)
-                red, green = self.__buoy_detector.run(self.__auv_state)
-                ### ---------------------------------------------------------- #
-                
+                green, red = self.__buoy_detector.run(self.__auv_state)
+
+                print("green:", green)
+                print("red:", red)
                 
                 cmd = self.__autonomy.decide(self.__auv_state, green, red, sensor_type='ANGLE')
-                ### ---------------------------------------------------------- #
-                
+                print("COMMAND: ", cmd)
                 ### turn your output message into a BPRMB request! 
-                bprmb = self.convert_to_BPRMB(cmd)
+                self.convert_to_BPRMB(cmd)
+                
                 time.sleep(1/self.__warp)
-
                 
-                # ------------------------------------------------------------ #
-                # ----This is example code to show commands being issued
-                # ------------------------------------------------------------ #
-                if True:
-                    print(f"dt = {self.__current_time - self.__start_time}")
-                    if not engine_started and (self.__current_time - self.__start_time) > 3:
-                        ## We want to change the speed. For now we will always use the RPM (1500 Max)
-                        self.__current_time = datetime.datetime.utcnow().timestamp()
-                        # This is the timestamp format from NMEA: hhmmss.ss
-                        hhmmss = datetime.datetime.fromtimestamp(self.__current_time).strftime('%H%M%S.%f')[:-4]
-
-                        cmd = f"BPRMB,{hhmmss},,,,750,0,1"
-                        # NMEA requires a checksum on all the characters between the $ and the *
-                        # you can use the BluefinMessages.checksum() function to calculate
-                        # and write it like below. The checksum goes after the *
-                        msg = f"${cmd}*{hex(BluefinMessages.checksum(cmd))[2:]}\n"
-                        self.send_message(msg)
-                        engine_started = True
-
-                    if not turned and (self.__current_time - self.__start_time) > 30:
-                        ## We want to set the rudder position, use degrees plus or minus
-                        ## This command is how much to /change/ the rudder position, not to 
-                        ## set the rudder
-                        self.__current_time = datetime.datetime.utcnow().timestamp()
-                        hhmmss = datetime.datetime.fromtimestamp(self.__current_time).strftime('%H%M%S.%f')[:-4]
-
-                        cmd = f"BPRMB,{hhmmss},-15,,,750,0,1"
-                        msg = f"${cmd}*{hex(BluefinMessages.checksum(cmd))[2:]}\n"
-                        self.send_message(msg)
-                        turned = True
-                    
-                # ------------------------------------------------------------ #
-                # ----End of example code
-                # ------------------------------------------------------------ #
-                
-                
-        except:
+        except Exception as e:
+            print("there was an exception: ", e)
             self.__client.cleanup()
             client.join()
           
@@ -222,7 +185,6 @@ class BackSeat():
                 with open(self.__log_file, 'a') as f:
                     f.write(f"Interpreted as: {nvr}\n")
                 
-                
             elif fields[0] == '$BFVER':
                 # don't care about the time for now
                 print(f"Version is {fields[2]}")
@@ -241,14 +203,10 @@ class BackSeat():
                     outstr = f"Request {msg_type} is pending"
                 with open(self.__log_file, 'a') as f:
                     f.write(f"{outstr}")
-                
-                
-                
+
             else:
                 print(f"I do not know how to process this message type: {fields[0]}")
             
-        
-        
     def send_message(self, msg):
         with open(self.__log_file, 'a') as f:
             f.write(f"{self.__current_time}, Sending: {msg}\n")
@@ -257,8 +215,8 @@ class BackSeat():
         self.__client.send_message(msg)    
         
     def send_status(self):
-        print("sending status...")
-        self.__current_time = datetime.datetime.utcnow().timestamp()
+        #print("sending status...")
+        self.__current_time = time.time()
         hhmmss = datetime.datetime.fromtimestamp(self.__current_time).strftime('%H%M%S.%f')[:-4]
         msg = BluefinMessages.BPSTS(hhmmss, 1, 'BWSI Autonomy OK')
         self.send_message(msg)
@@ -300,10 +258,11 @@ class BackSeat():
         return (local_pos[0]-self.__datum_position[0], local_pos[1]-self.__datum_position[1])
 
     def convert_to_BPRMB(self, msg):
-        output = "$BPRMB"
-        now = datetime.datetime.utcnow().timestamp()
-        delta_time = (now-self.__current_time) * self.__warp
-        output = output + str(delta_time)
+        if msg is None:
+            return
+        
+        self.__current_time = time.time()
+        hhmmss = datetime.datetime.fromtimestamp(self.__current_time).strftime('%H%M%S.%f')[:-4]
         rudder = ""
         items = msg.split()
         if items[0] == "RIGHT":
@@ -312,35 +271,29 @@ class BackSeat():
             elif items[1] == "FULL":
                 rudder = "30"
             else:
-                rudder = items[1]
+                rudder = str(int(float(items[1])))
         elif items[0] == "LEFT":
             if items[1] == "STANDARD":
                 rudder = "-15"
             elif items[1] == "FULL":
                 rudder = "-30"
             else:
-                rudder = "-" + items[1]
+                rudder = "-" + str(int(float(items[1])))
         elif items[0] == "HARD":
             if items[1] == "RIGHT":
-                rudder = "30"
+                rudder = "35"
             else:
-                rudder = "-30"
+                rudder = "-35"
         elif items[0] == "INCREASE":
-            rudder = items[4]
+            rudder = str(int(float(items[4])))
         elif items[0] == "RUDDER":
             rudder = "0"
         else:
             pass
-        output = output + "," + rudder
-        for i in range(5):
-            output = output + ","
-        output = output + "1"
-        return output
+        output = BluefinMessages.BPRMB(timestamp=hhmmss, heading=rudder, speed=500, speed_mode=int(0), horiz_mode=int(1))
+        self.send_message(output)
 
-    
-    
-    
-            
+
 def main():
     if len(sys.argv) > 1:
         host = sys.argv[1]
@@ -350,7 +303,7 @@ def main():
     if len(sys.argv) > 2:
         port = int(sys.argv[2])
     else:
-        port = 29500
+        port = 8042
     
     print(f"host = {host}, port = {port}")
     backseat = BackSeat(host=host, port=port)
