@@ -16,9 +16,8 @@ import time
 import cv2
 import numpy as np
 
-if os.uname().nodename == 'auvpi':
-   import picamera
-   import picamera.array
+import picamera
+import picamera.array
 
 # For simulations
 from BWSI_BuoyField import BuoyField
@@ -102,4 +101,3 @@ class ImageProcessor():
             return green, red[-1]
         else:
             return green, red
-    
