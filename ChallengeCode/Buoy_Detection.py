@@ -177,7 +177,7 @@ def red_update(im): # updates red buoy data
     return red_buoys
 
 def run(image):
-    im = cv2.imread(r'.\frames\frame_1627338749.jpg')
+    im = cv2.imread(image)
     red_buoys = red_update(im)
     green_buoys = green_update(im)
     print(red_pixel_means, green_pixel_means)
