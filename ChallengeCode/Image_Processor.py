@@ -82,7 +82,7 @@ class ImageProcessor():
                     time.sleep(2) # camera warmup time
                     
                 image = self.__camera.reshape((640, 480, 3))
-                image = np.flip(image, axis=0)
+                image = cv2.rotate(image, cv2.ROTATE_180)
         
             else:
                 print(f"Unknown camera type: {self.__camera_type}")
