@@ -9,7 +9,7 @@ import sys
 import numpy as np
 import cv2
 
-from BWSI_BuoyField import BuoyField
+import BWSI_BuoyField
 import matplotlib.pyplot as plt
 
 class BWSI_Camera(object):
@@ -46,7 +46,7 @@ class BWSI_Camera(object):
         self.__buoy_image_red = None
 
         
-    def get_visible_buoys(self, pos, hdg, buoy_field: BuoyField):
+    def get_visible_buoys(self, pos, hdg, buoy_field):
         angle_left = np.mod(hdg-self.__MAX_ANGLE+360, 360)
         angle_right = np.mod(hdg+self.__MAX_ANGLE, 360)
         G, R = buoy_field.detectable_buoys(pos, 
@@ -71,7 +71,7 @@ class BWSI_Camera(object):
                 
         return G, R
     
-    def get_frame(self, pos, hdg, buoy_field: BuoyField):
+    def get_frame(self, pos, hdg, buoy_field):
         G, R = self.get_visible_buoys_with_range(pos, hdg, buoy_field)
         print(f"{len(G)}, {len(R)}")
         image_snap = self.__image_mat.copy()
@@ -201,7 +201,7 @@ class BWSI_Camera(object):
     
         
 
-    def get_visible_buoys_with_range(self, pos, hdg, buoy_field: BuoyField):
+    def get_visible_buoys_with_range(self, pos, hdg, buoy_field):
         angle_left = np.mod(hdg-self.__MAX_ANGLE+360, 360)
         angle_right = np.mod(hdg+self.__MAX_ANGLE, 360)
         
@@ -221,7 +221,7 @@ class BWSI_Laser(object):
         self.__MAX_ANGLE = 85.0 # field of view of camera (+/- MAX_ANGLE degrees)
         self.__SENSOR_TYPE = 'RANGE_ANGLE'
         
-    def get_visible_buoys(self, pos, hdg, buoy_field: BuoyField):
+    def get_visible_buoys(self, pos, hdg, buoy_field):
         angle_left = np.mod(hdg-self.__MAX_ANGLE+360, 360)
         angle_right = np.mod(hdg+self.__MAX_ANGLE, 360)
         G, R = buoy_field.detectable_buoys(pos, 

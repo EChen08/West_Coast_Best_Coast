@@ -152,7 +152,7 @@ def main():
     if len(sys.argv) > 1:
         port = sys.argv[1]
     else:
-        port = 29500
+        port = 8042
         
     print(f"port = {port}")
         

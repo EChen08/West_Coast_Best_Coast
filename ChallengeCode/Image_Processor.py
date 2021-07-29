@@ -6,25 +6,25 @@ Created on Thu Jul 22 11:30:37 2021
 @author: BWSI AUV Challenge Instructional Staff
 """
 ### JRE: for simulation only!
-### MDM: added Rasperry Pi V2 camera 
 
 import sys
 import pathlib
 import datetime
 
-import time 
-import numpy as np
+import time
 import cv2
-#import picamera 
-#import picamera.array
+import numpy as np
+# import picamera
+# import picamera.array
 
 # For simulations
 from BWSI_BuoyField import BuoyField
 from BWSI_Sensor import BWSI_Camera
-import Buoy_Detection as bd
+import Buoy_Detection
+
 
 class ImageProcessor():
-    def __init__(self, camera='SIM', log_dir='./'):
+    def __init__(self, camera='PICAM', log_dir='./'):
         self.__camera_type = camera.upper()
 
         if self.__camera_type == 'SIM':
@@ -32,7 +32,7 @@ class ImageProcessor():
             self.__simField = None
             
         else:
-            #self.__camera = picamera.PiCamera()
+            # self.__camera = picamera.PiCamera()
             self.__camera.resolution = (640, 480)
             self.__camera.framerate = 24
             time.sleep(2) # camera warmup time
@@ -41,11 +41,10 @@ class ImageProcessor():
         # create my save directory
         self.__image_dir = pathlib.Path(log_dir, 'frames')
         self.__image_dir.mkdir(parents=True, exist_ok=True)
-
     
     # ------------------------------------------------------------------------ #
     # Run an iteration of the image processor. 
-    # The sim version needs the auv state to generate simulated imagery
+    # The sim version needs the auv state ot generate simulated imagery
     # the PICAM does not need any auv_state input
     # ------------------------------------------------------------------------ #
     def run(self, auv_state=None):
@@ -73,7 +72,7 @@ class ImageProcessor():
                     self.__camera.capture(self.__image, 'bgr')
                 except:
                     # restart the camera
-                    #self.__camera = picamera.PiCamera()
+                    # self.__camera = picamera.PiCamera()
                     self.__camera.resolution = (640, 480)
                     self.__camera.framerate = 24
                     time.sleep(2) # camera warmup time
@@ -85,10 +84,9 @@ class ImageProcessor():
                 sys.exit(-10)
         
             # log the image
-            fn = self.__image_dir / f"frame_{int(datetime.datetime.utcnow().timestamp())}.jpg"
-            cv2.imwrite(str(fn), image)
-            
-            # process and find the buoys!
-            red, green = bd.run(image)
-
+            fn = rf"{self.__image_dir}/frame_{int(datetime.datetime.utcnow().timestamp())}.jpg"
+            cv2.imwrite(fn, image)
+            green, red = Buoy_Detection.run(fn)
+        
         return green, red
+    

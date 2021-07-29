@@ -8,12 +8,6 @@ Created on Wed Jul  7 12:05:08 2021
 import sys
 import numpy as np
 
-def angle_difference(ref, target):
-    if abs(target - ref)>180:
-        return(abs(abs(target - ref) -360))
-    else:
-        return(abs(target -ref))
-
 class AUVController():
     def __init__(self):
         
@@ -40,7 +34,6 @@ class AUVController():
 
         # update state information
         self.__heading = auv_state['heading']
-        print('the heading is ', self.__heading)
         # self.__speed = auv_state['speed']
         # self.__rudder = auv_state['rudder']
         # self.__position = auv_state['position']
@@ -66,29 +59,30 @@ class AUVController():
     # calculate the heading we want to go to reach the gate center
     def __heading_to_position(self, gnext, rnext):
         # center of the next buoy pair
-        gate_center = ((gnext[0]+rnext[0])/2.0, (gnext[1]+rnext[1])/2.0)
+        if gnext and rnext:
+            gate_center = ((gnext[0]+rnext[0])/2.0, (gnext[1]+rnext[1])/2.0)
         
-        # heading to gate_center
-        tgt_hdg = np.mod(np.degrees(np.arctan2(gate_center[0]-self.__position[0],
-                                               gate_center[1]-self.__position[1]))+360,360)
-        
-        return tgt_hdg
+            # heading to gate_center
+            tgt_hdg = np.mod(np.degrees(np.arctan2(gate_center[0]-self.__position[0],
+                                               gate_center[1]-self.__position[1]))+360,360)   
+            return tgt_hdg
+        else:
+            return
     
     def __heading_to_angle(self, gnext, rnext):
-
-        if len(gnext)==1 and len(rnext)==1 :
-            relative_angle = (gnext[0] + rnext[0]) / 2.0
+        if not gnext and not rnext:
+            print('no')
+            return self.__heading
+        elif len(gnext)>=1 and len(rnext)>=1 :
+            relative_angle = (min(gnext) + min(rnext)) / 2.0
             # heading to center of the next buoy pair   
             tgt_hdg = self.__heading + relative_angle
-        elif len(gnext)==1:
-            tgt_hdg = self.__heading + gnext[0]
-        
-        elif len(rnext)==1:
-            tgt_hdg = self.__heading + rnext[0]
-        
-        else:
-            tgt_hdg = self.__heading
+        elif len(gnext)>=1:
+            tgt_hdg = self.__heading + min(gnext)        
+        elif len(rnext)>=1:
+            tgt_hdg = self.__heading + min(rnext)
 
+        print('none of the above')
         return tgt_hdg
 
     # choose a command to send to the front seat
@@ -96,6 +90,8 @@ class AUVController():
         # Unless we need to issue a command, we will return None
         cmd = None
         
+        if not (self.__heading or self.__desired_heading):
+            return None 
         # determine the angle between current and desired heading
         delta_angle = self.__desired_heading - self.__heading
         if delta_angle > 180: # angle too big, go the other way!

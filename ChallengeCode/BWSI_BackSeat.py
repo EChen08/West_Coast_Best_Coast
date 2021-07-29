@@ -26,9 +26,9 @@ from Sandshark_Interface import SandsharkClient
 # Check the NMEA checksum
 def checkthesum(msg):
     fields = msg.split('*')
-    cmd = fields[1][0:2]
+    cmd = fields[0][1:]
     expected = str(hex(BluefinMessages.checksum(cmd))[2:])
-    if expected.upper() != fields[1].upper():
+    if expected.upper() != fields[1][:2].upper():
         print(f"cmd = {cmd}\n")
         print(f"{expected} != {fields[1]}\n")
         return False
@@ -103,23 +103,18 @@ class BackSeat():
                 ### Here you process the image and return the angles to target
                 green, red = self.__buoy_detector.run(self.__auv_state)
 
-                print("green: ", green)
-                print("red: ", red)
+                print("green:", green)
+                print("red:", red)
                 
                 cmd = self.__autonomy.decide(self.__auv_state, green, red, sensor_type='ANGLE')
-                
+                print("COMMAND: ", cmd)
                 ### turn your output message into a BPRMB request! 
-                bprmb = self.convert_to_BPRMB(cmd)
-                
-                ## We want to set the rudder position, use degrees plus or minus
-                ## This command is how much to /change/ the rudder position, not to set the rudder]
-
-                msg = f"${bprmb}*{hex(BluefinMessages.checksum(bprmb))[2:]}\n"
-                self.send_message(msg)
+                self.convert_to_BPRMB(cmd)
                 
                 time.sleep(1/self.__warp)
                 
-        except:
+        except Exception as e:
+            print("there was an exception: ", e)
             self.__client.cleanup()
             client.join()
           
@@ -220,8 +215,8 @@ class BackSeat():
         self.__client.send_message(msg)    
         
     def send_status(self):
-        print("sending status...")
-        self.__current_time = datetime.datetime.utcnow().timestamp()
+        #print("sending status...")
+        self.__current_time = time.time()
         hhmmss = datetime.datetime.fromtimestamp(self.__current_time).strftime('%H%M%S.%f')[:-4]
         msg = BluefinMessages.BPSTS(hhmmss, 1, 'BWSI Autonomy OK')
         self.send_message(msg)
@@ -263,10 +258,11 @@ class BackSeat():
         return (local_pos[0]-self.__datum_position[0], local_pos[1]-self.__datum_position[1])
 
     def convert_to_BPRMB(self, msg):
-        output = "$BPRMB"
-        now = datetime.datetime.utcnow().timestamp()
-        delta_time = (now-self.__current_time) * self.__warp
-        output = output + str(delta_time)
+        if msg is None:
+            return
+        
+        self.__current_time = time.time()
+        hhmmss = datetime.datetime.fromtimestamp(self.__current_time).strftime('%H%M%S.%f')[:-4]
         rudder = ""
         items = msg.split()
         if items[0] == "RIGHT":
@@ -275,32 +271,29 @@ class BackSeat():
             elif items[1] == "FULL":
                 rudder = "30"
             else:
-                rudder = items[1]
+                rudder = str(int(float(items[1])))
         elif items[0] == "LEFT":
             if items[1] == "STANDARD":
                 rudder = "-15"
             elif items[1] == "FULL":
                 rudder = "-30"
             else:
-                rudder = "-" + items[1]
+                rudder = "-" + str(int(float(items[1])))
         elif items[0] == "HARD":
             if items[1] == "RIGHT":
                 rudder = "35"
             else:
                 rudder = "-35"
         elif items[0] == "INCREASE":
-            rudder = items[4]
+            rudder = str(int(float(items[4])))
         elif items[0] == "RUDDER":
             rudder = "0"
         else:
             pass
-        output = output + "," + rudder
-        for i in range(5):
-            output = output + ","
-        output = output + "1"
-        return output
+        output = BluefinMessages.BPRMB(timestamp=hhmmss, heading=rudder, speed=500, speed_mode=int(0), horiz_mode=int(1))
+        self.send_message(output)
 
-            
+
 def main():
     if len(sys.argv) > 1:
         host = sys.argv[1]
@@ -310,7 +303,7 @@ def main():
     if len(sys.argv) > 2:
         port = int(sys.argv[2])
     else:
-        port = 29500
+        port = 8042
     
     print(f"host = {host}, port = {port}")
     backseat = BackSeat(host=host, port=port)
