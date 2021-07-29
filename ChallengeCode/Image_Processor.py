@@ -16,8 +16,8 @@ import time
 import cv2
 import numpy as np
 
-import picamera
-import picamera.array
+#import picamera
+#import picamera.array
 
 # For simulations
 from BWSI_BuoyField import BuoyField
@@ -37,7 +37,7 @@ class ImageProcessor():
             self.__camera = picamera.PiCamera()
             self.__camera.resolution = (640, 480)
             self.__camera.framerate = 24
-            time.sleep(2) # camera warmup time
+            time.sleep(1/2) # camera warmup time
             self.__image = np.empty((480*640*3,), dtype=np.uint8)
 
         # create my save directory

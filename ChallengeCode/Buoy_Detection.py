@@ -69,7 +69,6 @@ def contour_func(contours, img, color:str):
                     ctr_sens_angles.pop(0)
                     ctr_sens_angles.append(angles(sens_ctr[0], sens_ctr[1]))
 
-    next_frames.append(img)
     if ctr_areas != [0] and color == 'red':
         red_sens_means.append(ctr_sens_means[0])
         red_sens_angles.append(ctr_sens_angles[0])
