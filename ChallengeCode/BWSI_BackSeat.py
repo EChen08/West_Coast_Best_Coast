@@ -290,7 +290,7 @@ class BackSeat():
             rudder = "0"
         else:
             pass
-        cmd = f"BPRMB,{hhmmss},{rudder},1,0,1000,0,1"
+        cmd = f"BPRMB,{hhmmss},{rudder},1,0,750,0,1"
         msg = f"${cmd}*{hex(BluefinMessages.checksum(cmd))[2:]}\n"
         self.send_message(msg)
 

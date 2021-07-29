@@ -158,7 +158,7 @@ class AUVController():
 
         if self.__speed == None or self.stored_position.all() == None or self.stored_buoy_green == None or self.stored_buoy_red == None or self.stored_heading == None:
             cmd = "RUDDER AMIDSHIPS"
-            self.__speed = 5*(1000/2500)
+            self.__speed = 5*(750/2500)
             print('your donuts are flat')
         else:
             self.find_target_and_desired_heading(self.__green_buoys, self.__red_buoys, self.__position)
